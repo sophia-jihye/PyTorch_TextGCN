@@ -95,9 +95,7 @@ def remove_less_word(lines_str, word_st):
 
 
 class CorpusProcess:
-    def __init__(self, dataset, encoding=None):
-        corpus_path = "data/text_dataset/corpus"
-        clean_corpus_path = "data/text_dataset/clean_corpus"
+    def __init__(self, corpus_path, clean_corpus_path, dataset, encoding=None):
         if not os.path.exists(clean_corpus_path):
             os.makedirs(clean_corpus_path)
 
@@ -150,11 +148,17 @@ class CorpusProcess:
 
 
 def main():
-    CorpusProcess("R52")
-    # CorpusProcess("20ng")
-    # CorpusProcess("mr")
-    # CorpusProcess("ohsumed")
-    # CorpusProcess("R8")
+    corpus_path = "/home/dmlab/Dropbox/DATA/PyTorch_TextGCN/text_dataset/corpus"
+    clean_corpus_path = "/home/dmlab/Dropbox/DATA/PyTorch_TextGCN/text_dataset/clean_corpus"
+    CorpusProcess(corpus_path, clean_corpus_path, "Patent")
+    
+    # corpus_path = "data/text_dataset/corpus"
+    # clean_corpus_path = "data/clean_corpus"
+    # CorpusProcess(corpus_path, clean_corpus_path, "R52")
+    # CorpusProcess(corpus_path, clean_corpus_path, "20ng")
+    # CorpusProcess(corpus_path, clean_corpus_path, "mr")
+    # CorpusProcess(corpus_path, clean_corpus_path, "ohsumed")
+    # CorpusProcess(corpus_path, clean_corpus_path, "R8")
     # pass
 
 

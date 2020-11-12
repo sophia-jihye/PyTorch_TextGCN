@@ -30,7 +30,7 @@ def get_train_test(target_fn):
     test_lst = list()
     with read_file(target_fn, mode="r") as fin:
         for indx, item in enumerate(fin):
-            if item.split("\t")[1] in {"train", "training", "20news-bydate-train"}:
+            if item.split("\t")[1] == "train":
                 train_lst.append(indx)
             else:
                 test_lst.append(indx)
@@ -39,9 +39,9 @@ def get_train_test(target_fn):
 
 
 class PrepareData:
-    def __init__(self, args):
+    def __init__(self, args, target_fn, graph_path):
         print("prepare data")
-        self.graph_path = "data/graph"
+        self.graph_path = graph_path
         self.args = args
 
         # graph
@@ -75,7 +75,6 @@ class PrepareData:
         # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
         # target
 
-        target_fn = f"data/text_dataset/{self.args.dataset}.txt"
         target = np.array(pd.read_csv(target_fn,
                                       sep="\t",
                                       header=None)[2])
@@ -211,7 +210,7 @@ class TextGCNTrainer:
         return test_desc
 
 
-def main(dataset, times):
+def main(target_fn, graph_path, dataset, times):
     args = parameter_parser()
     args.dataset = dataset
 
@@ -226,7 +225,7 @@ def main(dataset, times):
 
     print(args)
 
-    predata = PrepareData(args)
+    predata = PrepareData(args, target_fn, graph_path)
     cudause = CudaUse()
 
     record = LogResult()
@@ -257,10 +256,18 @@ def main(dataset, times):
 
 
 if __name__ == '__main__':
+    dataset = "Patent"
+    target_fn = f"/home/dmlab/Dropbox/DATA/PyTorch_TextGCN/text_dataset/{dataset}.txt"
+    graph_path = "/home/dmlab/Dropbox/DATA/PyTorch_TextGCN/graph"
+    
+    main(target_fn, graph_path, dataset, 1)
+    
     # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    # graph_path = "data/graph"
     # for d in ["mr", "ohsumed", "R52", "R8", "20ng"]:
-    #     main(d)
-    main("mr", 1)
-    # main("ohsumed")
-    # main("R8", 1)
+    #     target_fn = f"data/text_dataset/{d}.txt"
+    #     main(target_fn, graph_path, d)
+    # main("data/text_dataset/mr.txt", graph_path, "mr", 1)
+    # main("data/text_dataset/ohsumed.txt", graph_path, "ohsumed")
+    # main("data/text_dataset/R8.txt", graph_path, "R8", 1)
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

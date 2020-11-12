@@ -1,0 +1,10 @@
+*/.idea/*
+.idea/
+Untitled.py
+chromedriver_win32/
+__pycache__
+*.ipynb_checkpoints
+*.zip
+*.pkl
+*.csv
+.ipynb_checkpoints/

@@ -89,15 +89,13 @@ def get_pmi_edge(content_lst, window_size=20, threshold=0.):
 
 
 class BuildGraph:
-    def __init__(self, dataset):
-        clean_corpus_path = "data/text_dataset/clean_corpus"
-        self.graph_path = "data/graph"
+    def __init__(self, clean_corpus_path, graph_path, dataset):
+        self.graph_path = graph_path
         if not os.path.exists(self.graph_path):
             os.makedirs(self.graph_path)
 
-        self.word2id = dict()  # 单词映射
+        self.word2id = dict() 
         self.dataset = dataset
-        print(f"\n==> 现在的数据集是:{dataset}<==")
 
         self.g = nx.Graph()
 
@@ -183,11 +181,17 @@ class BuildGraph:
 
 
 def main():
-    BuildGraph("mr")
-    BuildGraph("ohsumed")
-    BuildGraph("R52")
-    BuildGraph("R8")
-    BuildGraph("20ng")
+    clean_corpus_path = "/home/dmlab/Dropbox/DATA/PyTorch_TextGCN/text_dataset/clean_corpus"
+    graph_path = "/home/dmlab/Dropbox/DATA/PyTorch_TextGCN/graph"
+    BuildGraph(clean_corpus_path, graph_path, "Patent")
+    
+    # clean_corpus_path = "data/text_dataset/clean_corpus"
+    # graph_path = "data/graph"
+    # BuildGraph(clean_corpus_path, graph_path, "mr")
+    # BuildGraph(clean_corpus_path, graph_path, "ohsumed")
+    # BuildGraph(clean_corpus_path, graph_path, "R52")
+    # BuildGraph(clean_corpus_path, graph_path, "R8")
+    # BuildGraph(clean_corpus_path, graph_path, "20ng")
 
 
 if __name__ == '__main__':
