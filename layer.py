@@ -53,4 +53,6 @@ class GCN(Module):
         x = th.relu(x)
         x = th.dropout(x, self.dropout, train=self.training)
         x = self.gc2(x, adj)
+        x = th.relu(x)
+        x = th.dropout(x, self.dropout, train=self.training)
         return x

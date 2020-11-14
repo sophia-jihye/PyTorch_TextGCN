@@ -5,39 +5,15 @@ from collections import defaultdict
 import numpy as np
 import torch as th
 import scipy.sparse as sp
+from sklearn.metrics import precision_score, recall_score, accuracy_score
 
-
-def macro_f1(pred, targ, num_classes=None):
+def macro_f1(pred, targ):
     pred = th.sigmoid(pred)
-    pred[pred >= 0.5] = 1.0
-    pred[pred < 0.5] = 0.0
-    
-    tp_out = []
-    fp_out = []
-    fn_out = []
-    if num_classes is None:
-        num_classes = sorted(set(targ.cpu().numpy().tolist()))
-    else:
-        num_classes = range(num_classes)
-    for i in num_classes:
-        tp = ((pred == i) & (targ == i)).sum().item()  # 预测为i，且标签的确为i的
-        fp = ((pred == i) & (targ != i)).sum().item()  # 预测为i，但标签不是为i的
-        fn = ((pred != i) & (targ == i)).sum().item()  # 预测不是i，但标签是i的
-        tp_out.append(tp)
-        fp_out.append(fp)
-        fn_out.append(fn)
+    pred[pred >= 0.5] = 1
+    pred[pred < 0.5] = 0
 
-    eval_tp = np.array(tp_out)
-    eval_fp = np.array(fp_out)
-    eval_fn = np.array(fn_out)
-
-    precision = eval_tp / (eval_tp + eval_fp)
-    precision[np.isnan(precision)] = 0
-    precision = np.mean(precision)
-
-    recall = eval_tp / (eval_tp + eval_fn)
-    recall[np.isnan(recall)] = 0
-    recall = np.mean(recall)
+    precision = precision_score(targ, pred, average='macro')
+    recall = recall_score(targ, pred, average='macro')
 
     f1 = 2 * (precision * recall) / (precision + recall)
     return f1, precision, recall
@@ -48,7 +24,7 @@ def accuracy(pred, targ):
     pred[pred >= 0.5] = 1.0
     pred[pred < 0.5] = 0.0
     
-    acc = ((pred == targ).float()).sum().item() / (targ.size()[0]*targ.size()[1])
+    acc = accuracy_score(targ, pred)
     return acc
 
 

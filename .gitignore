@@ -1,6 +1,6 @@
 */.idea/*
 .idea/
-Untitled.py
+Untitled.ipynb
 chromedriver_win32/
 __pycache__
 *.ipynb_checkpoints

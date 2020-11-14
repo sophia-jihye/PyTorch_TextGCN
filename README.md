@@ -1,12 +1,27 @@
 # Modifications by Jihye
 * Multi-label classification
     - `data/PatentDataImporter.py`
-        - `data/textdataset/Patent.txt`: multi-label 형태로 변환
+        - `data/textdataset/Patent.txt`
+            - multi-label 형태로 변환
     - `trainer.py`
-        - MultiLabelBinarizer: label을 index가 아닌 One-hot encoding 형태로 변환
-        - y.float() & torch.nn.BCEWithLogitsLoss: float타입의 logits 값과 float타입의 one-hot encoded y 값을 비교하여 loss 계산
+        - MultiLabelBinarizer
+            - label을 index가 아닌 One-hot encoding 형태로 변환
+        - y.float() & torch.nn.BCEWithLogitsLoss
+            - float타입의 logits 값과 float타입의 one-hot encoded y 값을 비교하여 loss 계산
     - `utils.py`
-        - Accuracy, MacroF1: logits값을 sigmoid함수 통해 변환한 후 0.5 이상이면 1, 0.5 미만이면 0으로 변환 후 계산
+        - Accuracy, MacroF1
+            - logits값을 sigmoid함수 통해 변환한 후 0.5 이상이면 1, 0.5 미만이면 0으로 변환 후 계산
+            - TP,FP,FN 계산 식 수정 
+* Dataset: [USPTO-2M](http://mleg.cse.sc.edu/DeepPatent/)
+    - 
+```
+2015_USPTO.json 
++---------+-----------+-------------+------------+------------+
+|  Nodes  |   Edges   |  Selfloops  |  Isolates  |  Coverage  |
++---------+-----------+-------------+------------+------------+
+|  68337  |  6226625  |      0      |     0      |   1.0000   |
++---------+-----------+-------------+------------+------------+
+```
 
 *****
 
@@ -17,6 +32,18 @@ PyTorch 1.6 and Python 3.7 implementation of Graph Convolutional Networks for Te
 Tested on the 20NG/R8/R52/Ohsumed/MR data set, the code on this repository can achieve the effect of the paper.
 
 ## Benchmark
+
+* MR Dataset
+```
++---------+----------+-------------+------------+------------+
+|  Nodes  |  Edges   |  Selfloops  |  Isolates  |  Coverage  |
++---------+----------+-------------+------------+------------+
+|  29426  |  918186  |      0      |     0      |   1.0000   |
++---------+----------+-------------+------------+------------+
+
+  (gc1): GraphConvolution (29426 -> 200)
+  (gc2): GraphConvolution (200 -> 2)
+```
 
 | dataset       | 20NG | R8 | R52 | Ohsumed | MR  |
 |---------------|----------|------|--------|--------|--------|

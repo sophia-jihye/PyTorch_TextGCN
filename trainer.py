@@ -173,9 +173,7 @@ class TextGCNTrainer:
                                   self.target[x])
             acc = accuracy(logits[x],
                            self.target[x])
-            f1, precision, recall = macro_f1(logits[x],
-                                             self.target[x],
-                                             num_classes=self.nclass)
+            f1, precision, recall = macro_f1(logits[x], self.target[x])
 
             desc = {
                 f"{prefix}_loss": loss.item(),
@@ -200,7 +198,7 @@ def main(target_fn, graph_path, dataset, times):
     args.dataset = dataset
 
     args.device = th.device('cuda') if th.cuda.is_available() else th.device('cpu')
-    args.nhid = 200
+    args.nhid = 10000
     args.max_epoch = 200
     args.dropout = 0.5
     args.val_ratio = 0.1
@@ -244,15 +242,4 @@ if __name__ == '__main__':
     dataset = "Patent"
     target_fn = f"/home/dmlab/Dropbox/DATA/PyTorch_TextGCN/text_dataset/{dataset}.txt"
     graph_path = f"/home/dmlab/Dropbox/DATA/PyTorch_TextGCN/graph/{dataset}.txt"
-    
     main(target_fn, graph_path, dataset, 1)
-    
-    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    # graph_path = "data/graph"
-    # for d in ["mr", "ohsumed", "R52", "R8", "20ng"]:
-    #     target_fn = f"data/text_dataset/{d}.txt"
-    #     main(target_fn, graph_path, d)
-    # main("data/text_dataset/mr.txt", graph_path, "mr", 1)
-    # main("data/text_dataset/ohsumed.txt", graph_path, "ohsumed")
-    # main("data/text_dataset/R8.txt", graph_path, "R8", 1)
-    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
