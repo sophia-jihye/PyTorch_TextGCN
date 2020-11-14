@@ -6,6 +6,7 @@ import networkx as nx
 import numpy as np
 import pandas as pd
 import torch as th
+from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.model_selection import train_test_split
 
 from layer import GCN
@@ -40,24 +41,18 @@ def get_train_test(target_fn):
 
 class PrepareData:
     def __init__(self, args, target_fn, graph_path):
+        self.mlb = MultiLabelBinarizer()
         print("prepare data")
-        self.graph_path = graph_path
-        self.args = args
 
         # graph
-        graph = nx.read_weighted_edgelist(f"{self.graph_path}/{args.dataset}.txt"
-                                          , nodetype=int)
+        graph = nx.read_weighted_edgelist(graph_path, nodetype=int)
         print_graph_detail(graph)
         adj = nx.to_scipy_sparse_matrix(graph,
                                         nodelist=list(range(graph.number_of_nodes())),
                                         weight='weight',
                                         dtype=np.float)
-
         adj = adj + adj.T.multiply(adj.T > adj) - adj.multiply(adj.T > adj)
-
         self.adj = preprocess_adj(adj, is_sparse=True)
-
-        # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
         # features
         self.nfeat_dim = graph.number_of_nodes()
@@ -65,26 +60,17 @@ class PrepareData:
         col = list(range(self.nfeat_dim))
         value = [1.] * self.nfeat_dim
         shape = (self.nfeat_dim, self.nfeat_dim)
-        indices = th.from_numpy(
-                np.vstack((row, col)).astype(np.int64))
+        indices = th.from_numpy(np.vstack((row, col)).astype(np.int64))
         values = th.FloatTensor(value)
         shape = th.Size(shape)
-
         self.features = th.sparse.FloatTensor(indices, values, shape)
 
-        # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
         # target
+        targets = [target.split(',') for target in np.array(pd.read_csv(target_fn, sep="\t", header=None)[2])]
+        self.target = self.mlb.fit_transform(targets)
+        self.nclass = len(self.mlb.classes_)
 
-        target = np.array(pd.read_csv(target_fn,
-                                      sep="\t",
-                                      header=None)[2])
-        target2id = {label: indx for indx, label in enumerate(set(target))}
-        self.target = [target2id[label] for label in target]
-        self.nclass = len(target2id)
-
-        # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
         # train val test split
-
         self.train_lst, self.test_lst = get_train_test(target_fn)
 
 
@@ -115,7 +101,7 @@ class TextGCNTrainer:
         self.model = self.model.to(self.device)
 
         self.optimizer = th.optim.Adam(self.model.parameters(), lr=self.args.lr)
-        self.criterion = th.nn.CrossEntropyLoss()
+        self.criterion = th.nn.BCEWithLogitsLoss()
 
         self.model_param = sum(param.numel() for param in self.model.parameters())
         print('# model parameters:', self.model_param)
@@ -152,7 +138,7 @@ class TextGCNTrainer:
         self.model = self.model.to(self.device)
         self.adj = self.adj.to(self.device)
         self.features = self.features.to(self.device)
-        self.target = th.tensor(self.target).long().to(self.device)
+        self.target = th.tensor(self.target).float().to(self.device)
         self.train_lst = th.tensor(self.train_lst).long().to(self.device)
         self.val_lst = th.tensor(self.val_lst).long().to(self.device)
 
@@ -164,7 +150,6 @@ class TextGCNTrainer:
             logits = self.model.forward(self.features, self.adj)
             loss = self.criterion(logits[self.train_lst],
                                   self.target[self.train_lst])
-
             loss.backward()
             self.optimizer.step()
 
@@ -258,7 +243,7 @@ def main(target_fn, graph_path, dataset, times):
 if __name__ == '__main__':
     dataset = "Patent"
     target_fn = f"/home/dmlab/Dropbox/DATA/PyTorch_TextGCN/text_dataset/{dataset}.txt"
-    graph_path = "/home/dmlab/Dropbox/DATA/PyTorch_TextGCN/graph"
+    graph_path = f"/home/dmlab/Dropbox/DATA/PyTorch_TextGCN/graph/{dataset}.txt"
     
     main(target_fn, graph_path, dataset, 1)
     

@@ -8,7 +8,10 @@ import scipy.sparse as sp
 
 
 def macro_f1(pred, targ, num_classes=None):
-    pred = th.max(pred, 1)[1]
+    pred = th.sigmoid(pred)
+    pred[pred >= 0.5] = 1.0
+    pred[pred < 0.5] = 0.0
+    
     tp_out = []
     fp_out = []
     fn_out = []
@@ -41,9 +44,11 @@ def macro_f1(pred, targ, num_classes=None):
 
 
 def accuracy(pred, targ):
-    pred = th.max(pred, 1)[1]
-    acc = ((pred == targ).float()).sum().item() / targ.size()[0]
-
+    pred = th.sigmoid(pred)
+    pred[pred >= 0.5] = 1.0
+    pred[pred < 0.5] = 0.0
+    
+    acc = ((pred == targ).float()).sum().item() / (targ.size()[0]*targ.size()[1])
     return acc
 
 
@@ -100,7 +105,7 @@ def print_graph_detail(graph):
            "edges"    : nx.number_of_edges(graph),
            "selfloops": nx.number_of_selfloops(graph),
            "isolates" : nx.number_of_isolates(graph),
-           "覆盖度"      : 1 - nx.number_of_isolates(graph) / nx.number_of_nodes(graph), }
+           "Coverage"      : 1 - nx.number_of_isolates(graph) / nx.number_of_nodes(graph), }
     print_table(dst)
 
 

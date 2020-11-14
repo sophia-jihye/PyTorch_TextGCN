@@ -1,3 +1,15 @@
+# Modifications by Jihye
+* Multi-label classification
+    - `data/PatentDataImporter.py`
+        - `data/textdataset/Patent.txt`: multi-label 형태로 변환
+    - `trainer.py`
+        - MultiLabelBinarizer: label을 index가 아닌 One-hot encoding 형태로 변환
+        - y.float() & torch.nn.BCEWithLogitsLoss: float타입의 logits 값과 float타입의 one-hot encoded y 값을 비교하여 loss 계산
+    - `utils.py`
+        - Accuracy, MacroF1: logits값을 sigmoid함수 통해 변환한 후 0.5 이상이면 1, 0.5 미만이면 0으로 변환 후 계산
+
+*****
+
 # Graph Convolutional Networks for Text Classification in PyTorch
 
 PyTorch 1.6 and Python 3.7 implementation of Graph Convolutional Networks for Text Classification [1].

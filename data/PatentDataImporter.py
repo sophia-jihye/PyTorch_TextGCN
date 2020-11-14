@@ -25,9 +25,10 @@ for filepath in tqdm(filepaths, desc='file processing'):
         for idx, multi_labels in enumerate(data['section_class_subclasses'].values()):
             if idx <= round(len(data['abstract'])*(1-test_ratio))-1: train_or_test = 'train'
             else: train_or_test = 'test'
-            label = multi_labels[0]   # TEMP. For single label classification.
+            multi_labels = [label.strip() for label in multi_labels]
+            label = ','.join(multi_labels)
             text = '%d\t%s\t%s' % (idx, train_or_test, label)
-            out_label_file.write(text + ' \n')
+            out_label_file.write(text + '\n')
 logger.info(f'Total number of processed rows: {cnt}.')
 
 out_label_file.close()
