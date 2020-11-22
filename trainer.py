@@ -198,7 +198,7 @@ def main(target_fn, graph_path, dataset, times):
     args.dataset = dataset
 
     args.device = th.device('cuda') if th.cuda.is_available() else th.device('cpu')
-    args.nhid = 10000
+    args.nhid = 200
     args.max_epoch = 200
     args.dropout = 0.5
     args.val_ratio = 0.1
